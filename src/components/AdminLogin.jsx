@@ -1,22 +1,28 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loginAdmin } from '../api';
+import axios from 'axios';
 
+async function loginAdmin(email, password) {
+  const response = await axios.post('http://localhost:4000/admin/login', {
+    email,
+    password
+  });
+  return response;
+}
 
 function AdminLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const history = useNavigate();
- 
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
       const response = await loginAdmin(email, password);
       localStorage.setItem('token', response.data.token);
-      history.push('/admin/dashboard');
+      navigate('/admin/dashboard');
     } catch (error) {
-      alert('Login failed');
+      alert('Login failed: ' + (error.response?.data?.message || error.message));
     }
   };
 
@@ -45,8 +51,6 @@ function AdminLogin() {
 }
 
 export default AdminLogin;
-
-
 
 
 
